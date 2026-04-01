@@ -128,11 +128,19 @@ body::before {
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background: #0d1117;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c9a84c44;
+  background: #30363d;
   border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* Remove noise overlay for messenger */
+body::before {
+  display: none;
 }
 
 /* Line reveal animation */

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Register user",
+    "method": "POST",
+    "path": "/register",
+    "body": {
+      "username": "testuser",
+      "display_name": "Test User",
+      "password": "password123"
+    },
+    "expectedStatus": 201
+  },
+  {
+    "name": "Login user",
+    "method": "POST",
+    "path": "/login",
+    "body": {
+      "username": "testuser",
+      "password": "password123"
+    },
+    "expectedStatus": 200
+  }
+]

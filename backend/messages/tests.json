@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Get chats",
+    "method": "GET",
+    "path": "/chats",
+    "headers": {
+      "X-User-Id": "00000000-0000-0000-0000-000000000000"
+    },
+    "expectedStatus": 200
+  }
+]
