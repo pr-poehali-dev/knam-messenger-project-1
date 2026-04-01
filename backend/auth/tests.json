@@ -4,7 +4,8 @@
     "method": "POST",
     "path": "/register",
     "body": {
-      "username": "testuser",
+      "username": "testuser123",
+      "email": "testuser123@example.com",
       "display_name": "Test User",
       "password": "password123"
     },
@@ -15,7 +16,7 @@
     "method": "POST",
     "path": "/login",
     "body": {
-      "username": "testuser",
+      "email": "testuser123@example.com",
       "password": "password123"
     },
     "expectedStatus": 200

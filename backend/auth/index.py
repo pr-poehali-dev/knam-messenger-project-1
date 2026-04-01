@@ -43,6 +43,8 @@ def make_response(data, status=200):
 def handler(request, context):
     if isinstance(request, list):
         request = request[0] if request else {}
+    if not isinstance(request, dict):
+        request = {}
 
     if request.get("method") == "OPTIONS":
         return {"statusCode": 204, "headers": CORS_HEADERS, "body": ""}
