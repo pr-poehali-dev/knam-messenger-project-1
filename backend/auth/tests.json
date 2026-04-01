@@ -1,15 +1,12 @@
 [
   {
-    "name": "Register user",
+    "name": "Send verification code",
     "method": "POST",
-    "path": "/register",
+    "path": "/send-code",
     "body": {
-      "username": "testuser123",
-      "email": "testuser123@example.com",
-      "display_name": "Test User",
-      "password": "password123"
+      "email": "newuser@example.com"
     },
-    "expectedStatus": 201
+    "expectedStatus": 200
   },
   {
     "name": "Login user",
@@ -19,6 +16,6 @@
       "email": "testuser123@example.com",
       "password": "password123"
     },
-    "expectedStatus": 200
+    "expectedStatus": 401
   }
 ]

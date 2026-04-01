@@ -44,6 +44,28 @@ function getHeaders(userId?: string): HeadersInit {
 }
 
 // Auth API
+export async function sendEmailCode(email: string) {
+  const res = await fetch(`${AUTH_URL}/send-code`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Ошибка отправки кода");
+  return data as { ok: boolean; message: string };
+}
+
+export async function verifyEmailCode(email: string, code: string) {
+  const res = await fetch(`${AUTH_URL}/verify-code`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify({ email, code }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Неверный код");
+  return data as { ok: boolean; verified: boolean };
+}
+
 export async function register(username: string, email: string, display_name: string, password: string) {
   const res = await fetch(`${AUTH_URL}/register`, {
     method: "POST",
