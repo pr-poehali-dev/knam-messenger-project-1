@@ -66,24 +66,35 @@ def handler(request, context):
         # Регистрация
         if path == "/register" and method == "POST":
             username = (body.get("username") or "").strip().lower()
+            email = (body.get("email") or "").strip().lower()
             display_name = (body.get("display_name") or "").strip()
             password = body.get("password") or ""
 
-            if not username or not display_name or not password:
+            if not username or not display_name or not password or not email:
                 return make_response({"error": "Все поля обязательны"}, 400)
 
+            # Проверяем формат email
+            if "@" not in email or "." not in email.split("@")[-1]:
+                return make_response({"error": "Некорректный email адрес"}, 400)
+
+            # Проверяем уникальность username
             cur.execute(f"SELECT id FROM {SCHEMA}.users WHERE username = %s", (username,))
             if cur.fetchone():
-                return make_response({"error": "Пользователь уже существует"}, 409)
+                return make_response({"error": "Пользователь с таким именем уже существует"}, 409)
+
+            # Проверяем уникальность email
+            cur.execute(f"SELECT id FROM {SCHEMA}.users WHERE email = %s", (email,))
+            if cur.fetchone():
+                return make_response({"error": "Email уже используется"}, 409)
 
             import random
             avatar_color = random.choice(COLORS)
             password_hash = hash_password(password)
 
             cur.execute(
-                f"""INSERT INTO {SCHEMA}.users (username, display_name, password_hash, avatar_color)
-                    VALUES (%s, %s, %s, %s) RETURNING id, username, display_name, avatar_color, bio""",
-                (username, display_name, password_hash, avatar_color)
+                f"""INSERT INTO {SCHEMA}.users (username, email, display_name, password_hash, avatar_color)
+                    VALUES (%s, %s, %s, %s, %s) RETURNING id, username, display_name, avatar_color, bio""",
+                (username, email, display_name, password_hash, avatar_color)
             )
             row = cur.fetchone()
             user = {"id": str(row[0]), "username": row[1], "display_name": row[2], "avatar_color": row[3], "bio": row[4] or ""}
@@ -94,22 +105,28 @@ def handler(request, context):
             token = generate_token(str(row[0]))
             return make_response({"user": user, "token": token}, 201)
 
-        # Вход
+        # Вход (по email или username)
         if path == "/login" and method == "POST":
-            username = (body.get("username") or "").strip().lower()
+            login_id = (body.get("email") or body.get("username") or "").strip().lower()
             password = body.get("password") or ""
 
+            if not login_id or not password:
+                return make_response({"error": "Введите email/имя пользователя и пароль"}, 400)
+
+            # Ищем по email или username
             cur.execute(
-                f"SELECT id, username, display_name, avatar_color, bio, password_hash FROM {SCHEMA}.users WHERE username = %s",
-                (username,)
+                f"""SELECT id, username, display_name, avatar_color, bio, password_hash 
+                    FROM {SCHEMA}.users 
+                    WHERE email = %s OR username = %s""",
+                (login_id, login_id)
             )
             row = cur.fetchone()
 
             if not row:
-                return make_response({"error": "Неверное имя пользователя или пароль"}, 401)
+                return make_response({"error": "Неверный email/имя пользователя или пароль"}, 401)
 
             if not check_password(password, row[5]):
-                return make_response({"error": "Неверное имя пользователя или пароль"}, 401)
+                return make_response({"error": "Неверный email/имя пользователя или пароль"}, 401)
 
             cur.execute(f"UPDATE {SCHEMA}.users SET is_online = true, last_seen = NOW() WHERE id = %s", (row[0],))
             conn.commit()

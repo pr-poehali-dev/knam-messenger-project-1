@@ -10,6 +10,7 @@ interface AuthProps {
 export default function Auth({ onAuth }: AuthProps) {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,11 +23,11 @@ export default function Auth({ onAuth }: AuthProps) {
 
     try {
       if (mode === "register") {
-        const result = await register(username, displayName, password);
+        const result = await register(username, email, displayName, password);
         saveSession(result.user, result.token);
         onAuth(result.user);
       } else {
-        const result = await login(username, password);
+        const result = await login(email, password);
         saveSession(result.user, result.token);
         onAuth(result.user);
       }
@@ -76,18 +77,35 @@ export default function Auth({ onAuth }: AuthProps) {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === "register" && (
+              <div>
+                <label className="text-[#8b949e] text-xs font-medium uppercase tracking-wider block mb-2">
+                  Имя пользователя
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="@username"
+                  className="w-full bg-[#0d1117] border border-[#30363d] rounded-xl px-4 py-3 text-white placeholder-[#484f58] focus:outline-none focus:border-[#5B8DEF] focus:ring-1 focus:ring-[#5B8DEF] transition-colors"
+                  required
+                  autoComplete="username"
+                />
+              </div>
+            )}
+
             <div>
               <label className="text-[#8b949e] text-xs font-medium uppercase tracking-wider block mb-2">
-                Имя пользователя
+                Email
               </label>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="@username"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
                 className="w-full bg-[#0d1117] border border-[#30363d] rounded-xl px-4 py-3 text-white placeholder-[#484f58] focus:outline-none focus:border-[#5B8DEF] focus:ring-1 focus:ring-[#5B8DEF] transition-colors"
                 required
-                autoComplete="username"
+                autoComplete="email"
               />
             </div>
 

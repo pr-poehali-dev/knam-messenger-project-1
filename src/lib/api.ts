@@ -44,22 +44,22 @@ function getHeaders(userId?: string): HeadersInit {
 }
 
 // Auth API
-export async function register(username: string, display_name: string, password: string) {
+export async function register(username: string, email: string, display_name: string, password: string) {
   const res = await fetch(`${AUTH_URL}/register`, {
     method: "POST",
     headers: getHeaders(),
-    body: JSON.stringify({ username, display_name, password }),
+    body: JSON.stringify({ username, email, display_name, password }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Ошибка регистрации");
   return data as { user: User; token: string };
 }
 
-export async function login(username: string, password: string) {
+export async function login(email: string, password: string) {
   const res = await fetch(`${AUTH_URL}/login`, {
     method: "POST",
     headers: getHeaders(),
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Ошибка входа");
